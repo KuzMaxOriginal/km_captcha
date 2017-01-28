@@ -50,8 +50,12 @@ class KMCaptcha {
      *      @type int    $length     Length of captcha text. Default 6.
      *      @type int    $font_size  Letters font size. Default 25.
      *      @type array  $font_color List of colors used to draw captcha text.
-     *                   Each color passes as array(R, G, B). Default red, green,
-     *                   blue, black, golden, ocean, violette.
+     *                               Each color passes as array(R, G, B).
+     *                               Default red, green, blue, black, golden, ocean,
+     *                               violette.
+     *      @type int    $text_angle Temporary solution of text rotation after image
+     *                               distortion. Turns image before noising by specified
+     *                               degrees.
      * }
      */
 	public function __construct($params=array()) {
@@ -69,7 +73,8 @@ class KMCaptcha {
 				array(255, 128, 0),
 				array(0, 128, 255),
 				array(255, 0, 255)
-			)
+			),
+            "text_angle" => 0,
 		);
 
 		$this->config = array_merge($default, $params);
@@ -248,7 +253,7 @@ class KMCaptcha {
 
 		// Rotate image after distortion to normalize text angle
 
-		$rotate = imagerotate($image, -15, 0xffffff);
+		$rotate = imagerotate($image, $this->config["text_angle"], 0xffffff);
 		$image = imagecrop($rotate, array(
 			"x" => imagesx($rotate) / 2 - $this->config["width"] / 2,
 			"y" => imagesy($rotate) / 2 - $this->config["height"] / 2,
