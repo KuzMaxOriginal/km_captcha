@@ -3,5 +3,6 @@
 require_once "core/class.captcha.php";
 
 $captcha = new Captcha;
+$captcha->nextImage();
 
-echo $captcha->getImage();
+echo "<img src='".$captcha->getImageBase64()."'/>";
