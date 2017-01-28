@@ -53,9 +53,6 @@ class KMCaptcha {
      *                               Each color passes as array(R, G, B).
      *                               Default red, green, blue, black, golden, ocean,
      *                               violette.
-     *      @type int    $text_angle Temporary solution of text rotation after image
-     *                               distortion. Turns image before noising by specified
-     *                               degrees.
      * }
      */
 	public function __construct($params=array()) {
@@ -73,8 +70,7 @@ class KMCaptcha {
 				array(255, 128, 0),
 				array(0, 128, 255),
 				array(255, 0, 255)
-			),
-            "text_angle" => 0,
+			)
 		);
 
 		$this->config = array_merge($default, $params);
@@ -122,9 +118,9 @@ class KMCaptcha {
 			$text .= $this->config["letters"][rand(0, strlen($this->config["letters"])-1)];
 		}
 
-		$this->_img_draw_text($image, $text);
-		$this->_img_distortion($image);
-		$this->_img_noise($image, 25);
+		$text_box = $this->_img_draw_text($image, $text);
+		$this->_img_distortion($image, ($text_box[2] - $text_box[0])*1.4 / 2);
+		$this->_img_noise($image, $this->config["width"]*$this->config["height"]*0.0006);
 
 		$this->_image = $image;
 		$this->_text = $text;
@@ -160,47 +156,25 @@ class KMCaptcha {
 	}
 
     /**
-     * Draws a text on the specified image.
+     * Draws a text label on the specified image.
      * Uses random color specified in $config.
      * Uses random font file from ./assets/fonts/.
      * @param $image resource Instance of image used to draw on.
      * @param $text string Text that will be drawn on the image.
+     * @return array Text box's coordinates array.
      */
     protected function _img_draw_text(&$image, $text) {
 		$text_size = $this->config["font_size"];
-		$text_agle = 0;
 
 		$font_list = glob(__DIR__."/assets/fonts/*.*");
 		$text_fontfile = $font_list[array_rand($font_list)];
 
 		// -> Detecting drawn text box's coordinates for centering the text
 
-		$text_box = imageftbbox($text_size, $text_agle, $text_fontfile, $text);
+		$text_box = imageftbbox($text_size, 0, $text_fontfile, $text);
 
-		$min_x = $this->config["width"];
-		$min_y = $this->config["height"];
-		$max_x = 0;
-		$max_y = 0;
-
-		for ($i = 0; $i < 4; $i++) {
-			$coord_x = $text_box[$i * 2];
-			$coord_y = $text_box[$i * 2 + 1];
-
-			if ($min_x > $coord_x)
-				$min_x = $coord_x;
-
-			if ($max_x < $coord_x)
-				$max_x = $coord_x;
-
-			if ($min_y > $coord_y)
-				$min_y = $coord_y;
-
-			if ($max_y < $coord_y)
-				$max_y = $coord_y;
-		}
-
-		$center_x = ($min_x + $max_x) / 2;
-		$center_y = ($min_y + $max_y) / 2;
+		$center_x = ($text_box[0] + $text_box[2]) / 2;
+		$center_y = ($text_box[1] + $text_box[5]) / 2;
 
 		$color_args_array = $this->config["font_color"][array_rand($this->config["font_color"])];
 		array_unshift($color_args_array, $image);
@@ -209,15 +183,16 @@ class KMCaptcha {
 		$text_x = $this->config["width"] / 2 - $center_x;
 		$text_y = $this->config["height"] / 2 - $center_y;
 
-		imagefttext($image, $text_size, $text_agle, $text_x, $text_y, $text_color, $text_fontfile, $text);
+		return imagefttext($image, $text_size, 0, $text_x, $text_y, $text_color, $text_fontfile, $text);
 	}
 
     /**
      * Distort the image using "swirl" function.
      * @link http://geekofficedog.blogspot.com/2013/04/hello-swirl-swirl-effect-tutorial-in.html
      * @param $image resource Instance of image used to draw on.
+     * @param $radius int Radius of distortion.
      */
-    protected function _img_distortion(&$image) {
+    protected function _img_distortion(&$image, $radius) {
 
 		// Clone image for the pixels map using
 
@@ -235,7 +210,7 @@ class KMCaptcha {
 			    $y = $py - $this->config["height"] / 2;
 			    $r = sqrt($x*$x+$y*$y);
 
-			    $maxr = $this->config["width"] / 2;
+			    $maxr = $radius;
 
 			    if ($r <= $maxr) {
 				    $a = atan2($y, $x);
@@ -253,7 +228,7 @@ class KMCaptcha {
 
 		// Rotate image after distortion to normalize text angle
 
-		$rotate = imagerotate($image, $this->config["text_angle"], 0xffffff);
+		$rotate = imagerotate($image, 0, 0xffffff);
 		$image = imagecrop($rotate, array(
 			"x" => imagesx($rotate) / 2 - $this->config["width"] / 2,
 			"y" => imagesy($rotate) / 2 - $this->config["height"] / 2,
