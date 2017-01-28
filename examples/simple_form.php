@@ -22,6 +22,7 @@ $captcha = new KMCaptcha(array(
 $captcha->next();
 
 // Use hash with salt to test the answer
+// Now we don't have to store the correct answer to database or temporary file
 $hash = hash("sha256", $captcha->getText().EXAMPLE_SALT);
 
 ?>
