@@ -16,8 +16,8 @@ $captcha = new KMCaptcha(array(
     "width" => 500,
     "height" => 300,
     "font_size" => 66,
-    "letters" => KMCaptcha::LETTERS_NUMS . KMCaptcha::LETTERS_EN_LOWER . KMCaptcha::LETTERS_EN_UPPER,
-    "length" => 6,
+    "letters" => KMCaptcha::LETTERS_NUMS . KMCaptcha::LETTERS_EN_UPPER,
+    "length" => 8,
 ));
 $captcha->next();
 
