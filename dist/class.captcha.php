@@ -225,15 +225,5 @@ class KMCaptcha {
 				}
 			}
 		}
-
-		// Rotate image after distortion to normalize text angle
-
-		$rotate = imagerotate($image, 0, 0xffffff);
-		$image = imagecrop($rotate, array(
-			"x" => imagesx($rotate) / 2 - $this->config["width"] / 2,
-			"y" => imagesy($rotate) / 2 - $this->config["height"] / 2,
-			"width" => $this->config["width"],
-			"height" => $this->config["height"]
-		));
 	}
 }
