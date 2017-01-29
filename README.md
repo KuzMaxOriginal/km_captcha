@@ -15,7 +15,7 @@ require_once "./class.captcha.php";
 $captcha = new KMCaptcha(); // Create KMCaptcha instance with default configuration
 $captcha->next(); // Generate new captcha
 
-$answer = $captcha->getTexc(); // Retrives the correct answer
+$answer = $captcha->getText(); // Retrives the correct answer
 
 echo '<img src='.$captcha->getImageBase64().'/>'; // This function returns base64 image representation
 
