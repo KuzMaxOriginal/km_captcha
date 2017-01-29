@@ -1,6 +1,6 @@
-# KMCaptcha - simple PHP class for generation nice and secure captcha!
+# KMCaptcha - a simple PHP class for generation nice and secure captcha!
 
-Welcome to KMCaptcha GitHub page! This small library allows you to create CAPTCHA image to prevent bots attack or checking user for some brains existance ;) OK, here you are.
+Welcome to KMCaptcha GitHub page! My small library allows you to create CAPTCHA image to prevent bots attack or checking user for some brains existance ;) OK, here you are.
 
 ## Basic usage
 The simplest way to use it:
@@ -15,14 +15,50 @@ require_once "./class.captcha.php";
 $captcha = new KMCaptcha(); // Create KMCaptcha instance with default configuration
 $captcha->next(); // Generate new captcha
 
+$answer = $captcha->getTexc(); // Retrives the correct answer
+
 echo '<img src='.$captcha->getImageBase64().'/>'; // This function returns base64 image representation
 
 // Some code below...
 ```
-The code shows recent generated captcha image. What about CAPTCHA configuration?
+The code shows recent generated captcha image and stores right answer to `$answer`.
+
+## Best way to check
+
+I highly recommend you to see examples in `/examples/` folder to study the best way to use it and check the answer. Howewer, the easiest way to post data:
+```php
+<?php
+
+...
+
+$hash = hash("sha256", $captcha->getText()."Some Salt Here");
+
+?>
+
+...
+
+<form>
+    <input type="hidden" name="hex" value="<?= $hash ?>"/>
+    <input type="text" name="answer" value=""/>
+</form>
+
+...
+```
+And check it:
+```php
+...
+
+$hash = hash("sha256", $_GET["answer"]."Some Salt Here");
+
+if ($hash == $_GET["hex"]) {
+    // The answer is correct!
+}
+
+...
+```
 
 ## Settings
-In order to customize CAPTCHA properties, pass array of desired options to KMCaptcha's constructor:
+In order to customize CAPTCHA's properties, pass array of desired options to KMCaptcha's constructor:
 ```php
 ...
 
@@ -45,7 +81,7 @@ $captcha = new KMCaptcha(array(
 
 ...
 ```
-All the values above is equaled to default.
+All the values above are equaled to default.
 
 Here is a complete list of arguments and it's description:
 * **width** - CAPTCHA's image width
