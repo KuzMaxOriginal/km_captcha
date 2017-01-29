@@ -89,7 +89,7 @@ Here is a complete list of arguments and it's description:
 * **letters** - List of characters that may be used by captcha text generator.
 * **length** - Length of CAPTCHA's text.
 * **font_size** - Letters font size.
-* **letters** - List of colors used to draw captcha text. Each color passes as array(R, G, B).
+* **font_color** - List of colors used to draw captcha text. Each color passes as array(R, G, B).
 
 ## Fonts
 In the KMCaptcha file directory, there's assets/fonts. Here, each file must be a valid font, which used to generate image text (choosing randomly). You can put your own fonts also.
