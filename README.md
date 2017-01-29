@@ -17,7 +17,7 @@ $captcha->next(); // Generate new captcha
 
 $answer = $captcha->getText(); // Retrives the correct answer
 
-echo '<img src='.$captcha->getImageBase64().'/>'; // This function returns base64 image representation
+echo '<img src="'.$captcha->getImageBase64().'"/>'; // This function returns base64 image representation
 
 // Some code below...
 ```
